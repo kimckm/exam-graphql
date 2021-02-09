@@ -11,7 +11,7 @@ const schema = buildSchema(`
   }
 
   type Question {
-    id: Int
+    id: ID
     question: String
     createAt: String
     correct: [Correct]
