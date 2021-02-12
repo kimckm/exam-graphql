@@ -7,4 +7,4 @@ const client = redis.createClient({
 
 client.keys('*', console.log);
 
-client.get('question::1501708288', console.log)
+// client.sadd('exam::1', '174789378048', console.log);

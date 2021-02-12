@@ -10,7 +10,7 @@ const serverUrl = 'http://localhost:12276';
 const schema = buildSchema(`
   type Query {
     completions: [Question]
-    exam: [Question]
+    exam(id: ID): [Question]
   }
 
   type Question {
@@ -45,21 +45,20 @@ const root = {
       correct: () => fetch(`${serverUrl}/completion_correct?completionId=${c.id}`).then(res => res.json()),
       audio: () => fetch(`${serverUrl}/completion_audios?completionId=${c.id}`).then(res => res.json()),
     }))),
-  exam: () => {
+  exam: ({ id }) => {
     const count = 10;
-    return cacheSrandmember('exam::1', count)
+    return cacheSrandmember(`exam::${id}`, count)
       .then(cacheIds => {
         if (cacheIds.length > 0) {
           return cacheIds;
         }
-        return fetch(`${serverUrl}/completions`)
+        return fetch(`${serverUrl}/exams/${id}`)
           .then(res => res.json())
-          .then(l => {
-            l.map(v => cacheSadd('exam::1', v.id));
-            return l.map(v => v.id);
+          .then(exam => {
+            exam.questions.map(v => cacheSadd(`exam::${id}`, v.questionId));
+            return exam.questions.map(v => v.questionId);
           });
       })
-
       .then(questionIds => Promise.all(questionIds.map(findOneCompletion)));
   },
 };
