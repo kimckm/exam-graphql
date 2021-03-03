@@ -34,6 +34,7 @@ const mod = {
   },
   cacheSadd: saddAsync,
   cacheSrandmember: srandmemberAsync,
+  expire: client.expire,
 };
 
 module.exports = mod;

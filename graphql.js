@@ -2,7 +2,7 @@ const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
 const fetch = require('node-fetch');
-const { cache, cacheSrandmember, cacheSadd } = require('./redis');
+const { cache, cacheSrandmember, cacheSadd, expire } = require('./redis');
 
 const serverUrl = 'http://localhost:12276';
 // const serverUrl = 'http://8.135.66.238:12276';
@@ -56,6 +56,7 @@ const root = {
           .then(res => res.json())
           .then(exam => {
             exam.questions.map(v => cacheSadd(`exam::${id}`, v.questionId));
+            expire(`exam::${id}`, 3600);
             return exam.questions.map(v => v.questionId);
           });
       })
